@@ -1,0 +1,101 @@
+<?php
+// $Id: image_title.install,v 1.1.4.4 2010/03/18 04:29:45 dksdev01 Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function image_title_install() {
+  drupal_install_schema('image_title');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function image_title_uninstall() { 
+  variable_del('image_title_directory'); 
+  $types = node_get_types(); 
+  foreach ($types as $type => $object) {  
+    variable_del('image_title_'.$type);  
+  } 
+  drupal_uninstall_schema('image_title'); 
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function image_title_schema() {
+  $schema['image_title_node'] = array(
+    'description' => t('Table for holding title images attached to nodes'),
+    'fields' => array(
+      'nid' => array(
+        'description' => t('The primary identifier for a node'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'image' => array(
+        'description' => t('The image attached to the title of the node'),
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'status' => array(
+        'description' => t('Status to switch between Image title and text title.'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('nid', 'image'),
+  );
+  $schema['image_title_menu'] = array(
+    'description' => t('Table for holding title images attached to hook_menu entries'),
+    'fields' => array(
+      'path' => array(
+        'description' => t('The primary identifier for a page provided using hook_menu'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'image' => array(
+        'description' => t('The image attached to the title of the hook_menu page'),
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+      ),
+      'status' => array(
+        'description' => t('Status to switch between Image title and text title.'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('path'),
+  );
+  return $schema;
+}
+
+/**
+ * Update a site to Drupal 6!
+ */
+function image_title_update_6000() {
+  $schema = image_title_schema();
+  $ret = array();
+  if (db_table_exists('image_title')) {
+    //remove entries for nodes with no active title image
+    update_sql('DELETE FROM {image_title} WHERE status = 0');
+    //drop the status field - no longer required
+    db_drop_field($ret, 'image_title', 'status');
+    //rename the table to reflect the specific purpose
+    db_rename_table($ret, 'image_title', 'image_title_node');
+  }
+  //create new table for handling hook_menu pages with title images
+  db_create_table($ret, 'image_title_menu', $schema['image_title_menu']);
+  return $ret;
+}
+
+function image_title_update_6001() {
+  $ret = array();
+  db_add_field($ret, 'image_title_node', 'status', array('type' => 'int', 'not null' => TRUE));
+  return $ret;
+}
