@@ -1,5 +1,4 @@
 <?php
-// $Id: image_title.install,v 1.1.4.4 2010/03/18 04:29:45 dksdev01 Exp $
 
 /**
  * Implementation of hook_install().

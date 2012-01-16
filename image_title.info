@@ -3,9 +3,9 @@ description = Allows you to upload images to replace text versions of page title
 package = Other
 version = VERSION
 core = 6.x
-; Information added by drupal.org packaging script on 2010-03-18
-version = "6.x-1.0-beta2"
+; Information added by drupal.org packaging script on 2011-02-25
+version = "6.x-2.x-dev"
 core = "6.x"
 project = "image_title"
-datestamp = "1268930713"
+datestamp = "1298619429"
 

@@ -1,5 +1,4 @@
 <?php
-// $Id: image_title.module,v 1.2.4.4 2010/03/18 04:29:45 dksdev01 Exp $
 
 /**
  * Implementation of hook_perm().

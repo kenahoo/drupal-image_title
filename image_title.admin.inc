@@ -1,5 +1,4 @@
 <?php
-// $Id: image_title.admin.inc,v 1.1.2.3 2010/03/18 04:29:45 dksdev01 Exp $
 /**
  * form containing available admin settings
  * 
