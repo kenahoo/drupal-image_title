@@ -246,7 +246,8 @@ function image_title_theme() {
  * (save, update, delete, etc.) 
  */
 function image_title_nodeapi(&$node, $op, $teaser, $page) {
-  if ( !user_access('create image titles') || (variable_get('image_title_'. $node->type, 1) == 0) ) {    
+  if ($op != "view" && $op != "load" && !user_access('create image titles')) {
+//  || (variable_get('image_title_'. $node->type, 1) == 0) ) {    // KAW not sure what this condition is
     return; // do nothing ... 
   }
   switch ($op) {
