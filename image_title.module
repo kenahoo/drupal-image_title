@@ -360,14 +360,16 @@ function image_title_nodeapi(&$node, $op, $teaser, $page) {
  * offers the form for title image upload as a variable for theming
  */
 function image_title_preprocess_page(&$variables) { 
-  
+  //we set another variable here because some modules may override $title
+  //later on, so you can in turn override their values in your theme
+  //template.php file with an appropriate preprocess containing simply:
+  //  $variables['title'] = $variables['image_title'];
+
   if (arg(0) === 'node' && is_numeric(arg(1))) {
     $thisnode = node_load($variables['node']->nid);
     if ($thisnode->image_title && $thisnode->image_title_status ) {
-      $orig_title = $thisnode->title;
-      $im_path = $thisnode->image_title;
-    } else {
-      return;
+      $variables['title'] =
+      $variables['image_title'] = make_image_html($thisnode->image_title, $thisnode->title);
     }
   } 
   else {
@@ -381,22 +383,15 @@ function image_title_preprocess_page(&$variables) {
     if ($image_title = db_fetch_array(
         db_query('SELECT image FROM {image_title_menu} WHERE path = "%s"', $item['path'])
        )) {
-      $orig_title = $item['title'];
-      $im_path = $image_title['image'];
-    } else {
-      return;
+      $variables['title'] =
+      $variables['image_title'] = make_image_html($image_title['image'], $item['title']);
     }
   }
+}
 
-  //we set another variable here because some modules may override $title
-  //later on, so you can in turn override their values in your theme
-  //template.php file with an appropriate preprocess containing simply:
-  //  $variables['title'] = $variables['image_title'];
-
+function make_image_html($im_path, $orig_title) {
   $image = theme('image', $im_path, $orig_title, $orig_title, '', FALSE);
-  $title = '<span class="txt_title">' . $orig_title . '</span>' . $image;
-  $variables['title'] = $title;
-  $variables['image_title'] = $title;  
+  return '<span class="txt_title">' . $orig_title . '</span>' . $image;
 }
 
 /**
